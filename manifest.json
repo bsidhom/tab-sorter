@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Sorter",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Sort Tabs"
+  },
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
