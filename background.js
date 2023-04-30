@@ -1,5 +1,3 @@
-console.log("starting worker");
-
 const compareFn = (a, b) => {
   if (a < b) {
     return -1;
@@ -28,7 +26,6 @@ chrome.action.onClicked.addListener(async (tab) => {
 
   const targetIndexes = tabUrls.map((tab, index) => ({ ...tab, index: index }));
   let promises = [];
-  console.log("moving tabs");
   for (const tab of targetIndexes) {
     // Sadly, it doesn't seem to be possible to move multiple tabs at once to
     // arbitrary locations (though you can bulk move a set of tabs to a fixed
@@ -37,5 +34,4 @@ chrome.action.onClicked.addListener(async (tab) => {
     promises.push(chrome.tabs.move(tab.id, { index: tab.index }));
   }
   await Promise.all(promises);
-  console.log("moved tabs");
 });
