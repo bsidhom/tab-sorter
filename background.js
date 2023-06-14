@@ -9,7 +9,9 @@ const compareFn = (a, b) => {
 };
 
 chrome.action.onClicked.addListener(async (tab) => {
-  const tabs = await chrome.tabs.query({});
+  const tabs = await chrome.tabs.query({
+    currentWindow: true,
+  });
   const tabUrls = tabs.map((tab) => {
     let url;
     if (tab.discarded && tab.pendingUrl) {
@@ -25,6 +27,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   tabUrls.sort((a, b) => compareFn(a.url, b.url));
 
   const targetIndexes = tabUrls.map((tab, index) => ({ ...tab, index: index }));
+  let urls = [];
   let promises = [];
   for (const tab of targetIndexes) {
     // Sadly, it doesn't seem to be possible to move multiple tabs at once to
@@ -32,6 +35,14 @@ chrome.action.onClicked.addListener(async (tab) => {
     // location).
     // await chrome.tabs.move(tab.id, {index: tab.index});
     promises.push(chrome.tabs.move(tab.id, { index: tab.index }));
+    urls.push(tab.url);
   }
   await Promise.all(promises);
+  const mime = "text/plain;charset=UTF-8";
+  const dataUrl = `data:${mime},${encodeURIComponent(urls.join("\n"))}`;
+  // const dataUrl = "data:" + mime + "," + urls.join("\n");
+  await chrome.tabs.create({
+    active: true,
+    url: dataUrl,
+  });
 });
